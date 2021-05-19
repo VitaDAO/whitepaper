@@ -23,4 +23,4 @@ The only changes to this file from the original are:
 
 There were several unaddressed open comments in the original Google docs working copy. Over the coming days, I will turn all of those into Github issues and attempt to make the original commentor a reviewer for that issue. 
 
-If you have any questions about how to contribute, the editing done to the document, of anything related to how to make this work better for you, please contact `audieleon#9746` at the [VitaDAO discord](https://discord.gg/3S3ftnmZYD). 
+If you have any questions about how to contribute, the editing done to the document, or anything related to how I can make this work better for you, please contact `audieleon#9746` at the [VitaDAO discord](https://discord.gg/3S3ftnmZYD). 
