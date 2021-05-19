@@ -3,8 +3,9 @@
 # VitaDAO Whitepaper
 
 ### Reproduction of Working Copy
+---
 
-This is a reproduction of the whitepaper working copy on Google docs [available here](https://docs.google.com/document/d/12UKF59VRNxpbE1B9P5N-KQ3HvH_8CRseHHtZ6tljRSk/edit#).
+This is a LaTeX reproduction of the whitepaper working copy on Google docs [available here](https://docs.google.com/document/d/12UKF59VRNxpbE1B9P5N-KQ3HvH_8CRseHHtZ6tljRSk/edit#).
 
 The only changes to this file from the original are: 
 - Minor spelling issues
@@ -20,7 +21,15 @@ The only changes to this file from the original are:
 - There are definitely some additional editing changes needed, but I kept close to the original
 
 ### Comments from the Working Copy
+---
 
 There were several unaddressed open comments in the original Google docs working copy. Over the coming days, I will turn all of those into Github issues and attempt to make the original commentor a reviewer for that issue. 
 
+### Reason For Move
+---
+
+Placing the paper here, in a form that allows contributors to focus on only content rather than formatting, frees up those contributor's valuable time. We can also track the changes we make back to *who* and *why*, and make provisional changes on branches for review prior to publishing. Lastly, sourced from here on github, all approved changes to the whitepaper will be available to the public and the website immediately. 
+
+### Have Questions?
+---
 If you have any questions about how to contribute, the editing done to the document, or anything related to how I can make this work better for you, please contact `audieleon#9746` at the [VitaDAO discord](https://discord.gg/3S3ftnmZYD). 
