@@ -1,4 +1,4 @@
-![VitaDao]("./images/VitaDAO Opengraph.png")
+![VitaDao](./images/VitaDAO Opengraph.png)
 
 # VitaDAO Whitepaper
 
