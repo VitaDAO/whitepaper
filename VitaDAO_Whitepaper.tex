@@ -1,27 +1,29 @@
-\documentclass[12pt,letterpaper]{article}
+\documentclass[10pt,letterpaper]{article}
 
-\usepackage[utf8]{inputenc}			% Sets encoding to UTF-8
-\usepackage{times}					% Use Times New Roman as the default font
-\usepackage{setspace}				% Free document from ugly single spacing
-\usepackage{graphicx}				% So image use is possible
-\usepackage{enumerate}				% Allows use of specified list numbering (letters)
-\usepackage{lastpage}				% Gives the last page number as an accessible number
-\usepackage{fancyhdr}				% Makes "1 of 10" type page numbering possible
+\usepackage[utf8]{inputenc}				% Sets encoding to UTF-8
+\usepackage{times}							% Use Times New Roman as the default font
+\usepackage{setspace}						% Free document from ugly single spacing
+\usepackage{graphicx}						% So image use is possible
+\usepackage{enumerate}					% Allows use of specified list numbering (letters)
+\usepackage{lastpage}						% Gives the last page number as an accessible number
+\usepackage{fancyhdr}						% Makes "1 of 10" type page numbering possible
+\usepackage{array}							% Used in the table\usepackage{enumitem}
+\usepackage{url}							% Provides clickable URLs (in the bibilography)
+\usepackage[sort&compress]{natbib}		% Need this for the bibliography to work properly
+\usepackage[margin=1in]{geometry}		% Set margins to standard 1 inch margins
+\usepackage{xurl}							% Provides url breaks so urls don't overrun lines
+\usepackage{indentfirst}					% Indent the first paragraph of sections
 \usepackage[protrusion=true,
             expansion=true,
-            final]{microtype}		% Improves hbox handling, reducing errors
-\usepackage{url}					% Provides clickable URLs (in the bibilography)
-\usepackage[sort&compress]{natbib}	% Need this for the bibliography to work properly
-\usepackage[margin=1in]{geometry}	% Set margins to standard 1 inch margins
-\usepackage{xurl}
+            final]{microtype}			% Improves hbox handling, reducing errors
 \usepackage[breaklinks,
-			colorlinks = true,
+			   colorlinks = true,
             linkcolor = blue,
             urlcolor  = blue,
             citecolor = blue,
             anchorcolor = blue]
-            {hyperref}				% Makes TOC Links to content
-%\usepackage{showframe}				% Uncomment for troubleshooting layout issues
+            {hyperref}					% Makes TOC Links to content
+%\usepackage{showframe}					% Uncomment for troubleshooting layout issues
 
 % use the same font for URLs - better than courier...
 \urlstyle{same}
@@ -42,27 +44,37 @@
 % add the "1 of 10" type page numbering
 \fancyfoot[C]{\begin{flushright}\begin{footnotesize}{\thepage} of \pageref{LastPage}\end{footnotesize}\end{flushright}}
 
+% tighten up the lists
+\newenvironment{tight_enumerate}{
+\begin{enumerate}
+  \setlength{\itemsep}{0pt}
+  \setlength{\parskip}{0pt}
+}{\end{enumerate}}
+
 % some aliases for organizations in the bibliography who need citations to show up in the references section
 \defcitealias{Ocean2021}{Ocean Marketplace}
 \defcitealias{Balancer2021}{Balancer Liquidity Bootstrapping Pools}
+\defcitealias{EIP-721}{EIP-721}
+\defcitealias{EIP-1155}{EIP-1155}
 
 \begin{document}
 
 \begin{titlepage}
 \centering
-\includegraphics[width=\linewidth]{images/VitaDAO Opengraph.png} 
+\includegraphics[width=0.8\linewidth]{images/VitaDAO Opengraph.png} 
 \\
 \vspace{36pt}
-{\begin{Large} \textbf{Whitepaper V0.1}\end{Large}}
+{\begin{LARGE} \textbf{Whitepaper V1.0}\end{LARGE}}
 \\
 \vspace{18pt}
-{\begin{large}{Authors: Tyler Golato, Paul Kohlhaas}\end{large}}
+{\begin{Large}{Authors: Tyler Golato, Paul Kohlhaas}\end{Large}}
 \\
 \vspace{18pt}
-{\begin{small}{Acknowledgments:  Jesse Hudson, Elad Verbin, James Brodie, Trent McConaghy, Robert Miller, Dimitri De Jonghe, Aubrey De Grey, Morten Scheibye-Knudsen, Theodor Walker}\end{small}}
+{\begin{large}{Editor: Audie Sheridan}\end{large}}
 \\
 \vspace{18pt}
-{\small\emph{(Draft open for public and community comment)}}
+{\begin{large}{Acknowledgments:  Jesse Hudson, Elad Verbin, James Brodie, Trent McConaghy, Robert Miller, Dimitri De Jonghe, Aubrey De Grey, Morten Scheibye-Knudsen, Theodor Walker, Juri Stricker, Sebastian Brunemeier, Alev Basaran, Tim Peterson}\end{large}}
+\\
 \end{titlepage}
 
 \newpage
@@ -76,13 +88,20 @@
 % add the abstract to the TOC, preserving section numbering
 \addcontentsline{toc}{section}{\protect\numberline{\thesection}Abstract}
 
-VitaDAO is a new cooperative vehicle for community-governed and decentralized drug development. Our core mission is the acceleration of R\&D in the extension of human life and health-span. Today, the biopharma industry booms with unprecedented late-stage investment, particularly in longevity science. However, the industry severely lacks critical \textit{early-stage} funding, and incentives between patients, researchers and industry are misaligned. To align incentives and vitalize early-stage funding in longevity biopharma, VitaDAO uses a combination of novel governance frameworks in decentralized autonomous organizations (DAOs), non-fungible tokens (NFTs), and financial engineering tools such as algorithmic automated market makers (AMMs), all of which run on the Ethereum blockchain.
+VitaDAO is a new cooperative vehicle for community-governed and decentralized drug development and intellectual property. Our core mission is the acceleration of R\&D in the extension of human life and health-span. Today, the biopharma industry booms with unprecedented late-stage investment, particularly in longevity science. However, the industry severely lacks critical \textit{early-stage} funding. Moreover, incentives between patients, researchers and industry are misaligned, risking monopolization of lifespan extension.
 
-At its core, biopharma value is intellectual property (IP) rights, domain specific know-how, and research data. Research and development is now prohibitively expensive and siloed, largely due to the way IP business models incentivize monopolization of innovation. This is done through the creation of patent thickets in protected portfolios. These IP mechanisms prevent open sharing of research data, inherently disincentivizing collaboration and transparency. They prevent the public and patients from having any real ownership in biopharma IP, despite their tax dollars funding most early-stage development. Outside of grants to fund basic research, early-stage funding for drug development is extremely limited. When drugs do finally make it to market, there exist strong incentives for price gouging.
+At its core, biopharma value creation consists of intellectual property (IP) rights, domain specific know-how, and research data. Today, R\&D has become prohibitively expensive and siloed, largely due to the way IP business models incentivize monopolization of innovation. This is done through the creation of patent thickets in protected portfolios. These IP mechanisms prevent open sharing of research data, inherently disincentivizing collaboration and transparency. They prevent the public and patients from having any real ownership in biopharma IP, despite their tax dollars funding most early-stage development. Outside of grants to fund basic research, early-stage funding for drug development is extremely limited. When drugs do finally make it to market, there exist strong incentives for price gouging. 
 
-VitaDAO solves some of these problems. An open cooperative anyone can join, VitaDAO’s goal is to support and finance new therapeutics and research data in longevity science. In exchange, VitaDAO will directly hold IP rights in the novel early-stage therapeutics it supports and funds. We will grow a portfolio of IP and data assets, which we can make available and monetize through novel data marketplaces such as \citetalias{Ocean2021}. This promotes both open science and new business models.
+To align incentives and vitalize early-stage funding in longevity biopharma, VitaDAO uses a combination of novel governance frameworks in decentralized autonomous organizations (DAOs), non fungible tokens (NFTs), and financial engineering tools such as algorithmic automated market makers (AMMs), all of which run on the Ethereum blockchain. 
 
-Ownership of VitaDAO and its governance require VITA tokens. To obtain VITA tokens, a person or organization can contribute work, funds, or other resources like data and IP to VitaDAO. Ownership of VITA allows the holder to participate in democratic governance of VitaDAO, and thus direct its research, access and monetize its data repositories, and manage its IP portfolio.
+As an open global cooperative that anyone can join, VitaDAO’s goal is to support and finance new therapeutics and research data in longevity science. In exchange, VitaDAO will directly hold IP and data rights in the novel early-stage therapeutics it supports and funds. We will grow a portfolio of IP and data assets, which we can make available and monetize either through novel data marketplaces or by conventional licensing and commercialisation processes in biopharm. By utilising community-guided decision making processes, VitaDAO aims to:
+\begin{tight_enumerate}
+\item rapidly decrease funding decision lifecycles
+\item attract the worlds leading researchers by promoting open science principles
+\item democratize ownership thereof
+\end{tight_enumerate}
+
+The lifeblood of VitaDAO is its native curation and governance token: VITA. Individuals or organizations can obtain VITA tokens by contributing work, funds, or other resources like data and IP. Ownership of VITA allows the holder to participate in the curation and governance of VitaDAOs assets and its research.
 
 \end{abstract}
 
@@ -95,54 +114,78 @@ Ownership of VitaDAO and its governance require VITA tokens. To obtain VITA toke
 
 \newpage
 
-\section{Introduction}
-Current biopharma business models carry severe limitations and R\&D inefficiencies at the cost of those who should be the core stakeholders: the patients in need of medication and researchers discovering new therapeutics.
+\section{Introduction and Key Challenges}
+Current biopharma business models carry severe limitations and R\&D inefficiencies at the cost of those who should be the core stakeholders: patients in need of medication and researchers discovering new therapeutics. We propose a novel organisational structure to address these challenges.
+ 
+VitaDAO is a decentralized membership collective funding early stage longevity research. Its mission is to extend human lifespan by researching, financing, and commercializing longevity therapeutics in an open and democratic manner. VitaDAO will own the intellectual property assets that result from the projects it supports, and members of VitaDAO govern the structure and its decision making processes. Members can join VitaDAO by purchasing VITA tokens or earning them through contributions of work or intellectual property.
 
-\subsection{Intellectual Property in Biopharma}
-Fundamentally, value creation in biopharma requires building two core assets: intellectual property (IP) and research and development (R\&D) data \citep{Chandra2011}. When companies explore a use case for a new therapeutic, they patent their discoveries to gain IP. IP enables them to secure future revenue and recoup the high costs of R\&D. As companies invest billions of dollars into generating data to bring therapeutics to market, they offset this by selling equity ownership or IP royalty rights in the form of future drug sales or milestone based payments. \citep{Wouters2020}. While IP in theory incentivizes innovation, in practice it does the opposite. IP ownership as a business model barely evolved in the past century, remaining mainly extensive legal contracts and bureaucratic complexities. IP is one of the most valuable asset classes in the world but it remains rigid, largely illiquid, and difficult to transfer.
-
-IP owners and sellers who seek to monopolize commercial value have incentives to withhold negative research data. This creates a principal-agent dilemma and, in part, leads to a phenomenon coined the “reproducibility crisis” \citep{Sherkow2017}. Pharma tends to only share positive R\&D data which leads companies to waste enormous resources repeating each others’ failures because without complete data, clinical and preclinical studies are often not reproducible. 
-
-The current system severely lacks incentives for open science, collaboration, and data sharing \citep{Ali-Khan2017}. IP Owners downplay side effects or indicators of lower effectiveness in favor of profit maximization. Valuable research findings are lost for the broader scientific community and not considered during patient treatment. Monopolistic IP ownership within biopharma companies leads to centralization, and the disincentivization of collaboration. Promising drug candidates often fall to the wayside for organizational, political, or competitive reasons. These centralized and siloed research efforts lead to the high R\&D cost and long time-to-market plaguing pharma today. The excess cost ranges from \$800 million to \$2.6 billion on average in cost, and time to market takes upwards of 10 years \citep{DiMasi2016}. On a macro scale, this IP model leads to incentive misalignment and information asymmetry. 
-
-Lastly, the current financing and investment landscape restricts access and participation to early-stage biopharma from its most important stakeholders: patients and researchers. In the US, generally only accredited investors can finance early-stage ventures \citep{Rowley2018}. The market is opaque, and no singular or efficient marketplace exists to discover or access these opportunities in a transparent fashion.
-
-We need more democratic, open, and transparent models. Collaboration and open research in the scientific community could bring down the rising cost of drug development \citep{Bookbinder2020}.
-
-\subsection{The Evolution of Pharma and the Valley of Death}
-There is a significant shift underway in the pharmaceutical industry's process of drug development. Increasingly, smaller biotech firms leverage recent academic research in the life sciences to develop new drugs, and then pharmaceutical giants acquire these smaller firms and their expertise using their access to low-cost capital \citep{Huang2021} Notably, much of the funding for this academic work comes from grants or public capital, but  pharmaceutical companies then privatize it so the public receives little upside from the research it funded \citep{Toole2004}. The number of biotech startup companies formed due to technology licensing increased dramatically in recent years, from 145 in 1994 to 278 in 2000 to 1,024 in 2016. The increase is on an exponential curve. Of the 30 top-selling drugs worldwide in 2000, only five traced back to universities and the remaining 25 were developed by big pharma. By 2018 however, more than half of the top 30 drugs were sourced from academia \citep{Huang2021}. Biotech universities increasingly prove themselves as untapped goldmines of valuable IP, yet often these assets are unavailable for investment until a startup spins up. 
-
-Assets from universities not out-licensed or spun out into startups remain in a difficult limbo, known as "The Valley of Death," where they often fail to move forward \citep{Seyhan2019}. Many of these technologies have extreme value to patients, but because of this system, they never ultimately serve the populations intended to benefit from them. These assets require investment and capital injections at a much earlier stage. The market desperately needs new open commercialization models to incentivize their development. We need a creator economy for researchers and universities, as they are one of humanities greatest assets. 
+For a non-technical summary about how VitaDAO works, please see \href{https://vitadao.medium.com/how-vitadao-works-61bbf861fe96}{this article}.
 
 \subsection{Longevity Will Transform Our Approach To Medicine}
 Longevity science has the power to completely transform global healthcare. Age-related diseases are among the most significant contributors to our global health burden and are responsible for the highest costs incurred by healthcare systems \citep{WHO2011}. 
 
-The longevity space is experiencing a tremendous boom, in part because of its ability to address this problem. The space is evolving rapidly in terms of understanding the aging process and its capacity to develop health and life-extending therapeutics \citep{ARDD2020}. It is now a routine procedure to reverse the aging of human cells in the laboratory. Correspondingly, the economics of investing in longevity are more attractive than ever. There are 100s of new companies and funds dedicated to research and product development in the fields of senolytics, telomeres, stem cells, mitochondria, and gene editing \citep{Pfleger2021}. These are some of the core domains from which therapies that increase lifespan will emerge. However, aging is not recognized as a disease, and this has created barriers to prescribing drugs for aging itself \citep{Suresh2014}. 
+The longevity space is experiencing a tremendous boom, in part because of its ability to address this problem. The space is evolving rapidly in terms of understanding the aging process and its capacity to develop health and life-extending therapeutics \citep{ARDD2020}. It is now a routine procedure to reverse the aging of human cells in the laboratory. Correspondingly, the economics of investing in longevity are more attractive than ever. There are 100s of new companies and funds dedicated to research and product development in the fields of senolytics, telomeres, stem cells, mitochondria, and gene editing \citep{Pfleger2021}. These are some of the core domains from which therapies that increase lifespan will emerge. However, aging is not recognized as a disease, and this has created barriers to prescribing drugs for aging itself \citep{Suresh2014}). 
 
 The rush of investment into the field has the potential to rapidly accelerate these developments but also comes with distinct problems. The centralization of aging research by large institutions and billionaires has the potential to create the same problems and pitfalls that plague the pharmaceutical industry: lack of transparency, restricted access, and concentrated control over therapeutics that should be made widely available to anyone at an affordable price. 
 
-We believe the future of health and life-extension should be open, collaborative, and community-owned. We see longevity as an entirely new approach to medicine, one that has the potential to prevent, as opposed to treat or intervene. This approach will completely change the way the world provides medical care and will profoundly impact society.
+The current state risks allowing the monopolization of these new technologies. Centralized, profit-driven control would turn longevity into a luxury good accessible only to the top 0.1\% globally. Such limited access would inevitably prevent redistribution of wealth \citep{Ihle2017}, and lead to deeper income inequality and more concentration of capital. At VitaDAO, we believe the future of health and life-extension should be open, collaborative, and community owned. It should benefit all. We see longevity as an entirely new approach to medicine, one that has the potential to prevent, as opposed to treat or intervene. This approach will completely change the way the world provides medical care and will profoundly impact society. 
+
+\subsection{Intellectual Property in Biopharma}
+Fundamentally, value creation in biopharma consists of two core assets: intellectual property (IP) and research and development (R\&D) data \citep{Chandra2011}. When companies explore a use case for a new therapeutic, they patent their discoveries to gain IP. IP enables them to secure future revenue and recoup the high costs of R\&D. As companies invest billions of dollars into generating data to bring therapeutics to market, they offset this by selling equity ownership or IP royalty rights in the form of future drug sales or milestone based payments. \citep{Wouters2020}. In theory, intellectual property incentivizes innovation, but in practice it does the opposite. IP ownership as a business model barely evolved over the past century, and is still mainly driven by extensive legal contracts and bureaucratic complexities. IP is one of the most valuable asset classes in the world but it remains rigid, largely illiquid, and difficult to transfer. 
+
+IP owners and sellers who seek to monopolize commercial value have incentives to withhold negative research data. This creates a principal-agent dilemma and, in part, leads to a phenomenon coined the “reproducibility crisis” \citep{Sherkow2017}. Pharma tends to only share positive R\&D data which leads companies to waste enormous resources repeating each others’ failures - because without complete data, clinical and preclinical studies are often not reproducible. 
+
+The current system severely lacks incentives for open science, collaboration, and data sharing \citep{Ali-Khan2017}. IP Owners downplay side effects or indicators of lower effectiveness in favor of profit maximization. Valuable research findings are lost for the broader scientific community and not considered during patient treatment. Monopolistic IP ownership within biopharma companies leads to centralization, and the disincentivization of collaboration. Promising drug candidates often fall to the wayside for organizational, political, or competitive reasons. These centralized and siloed research efforts lead to the high R\&D cost and long time-to-market plaguing pharma today. The excess cost ranges from \$800 million to \$2.6 billion on average in cost, and time to market takes upwards of 10 years \citep{DiMasi2016}. On a macro scale, this IP model leads to incentive misalignment and information asymmetry. 
+
+The current financing and investment landscape restricts access and participation to early-stage biopharma from its most important stakeholders: patients and researchers. In the US, generally only accredited investors can finance early-stage ventures \citep{Rowley2018}. The market is opaque, and no singular or efficient marketplace exists to discover or access these opportunities in a transparent fashion.
+
+We need more democratic, open, and transparent models. Collaboration and open research in the scientific community could bring down the rising cost of drug development \citep{Bookbinder2020}. 
+
+\subsection{The Evolution of Pharma and the Valley of Death}
+There is a significant shift underway in the pharmaceutical industry’s process of drug development. Increasingly, smaller biotech firms leverage recent academic research in the life sciences to develop new drugs, and then pharmaceutical giants acquire these smaller firms and their expertise using their access to low-cost capital \citep{Huang2021} Notably, much of the funding for this academic work comes from grants or public capital, but pharmaceutical companies then privatize it so the public receives little upside from the research it funded \citep{Toole2004}. The number of biotech startup companies formed due to technology licensing increased dramatically in recent years, from 145 in 1994 to 278 in 2000 to 1,024 in 2016. The increase is on an exponential curve. Of the 30 top-selling drugs worldwide in 2000, only five traced back to universities and the remaining 25 were developed by big pharma. By 2018 however, more than half of the top 30 drugs were sourced from academia \citep{Huang2021}. Biotech universities increasingly prove themselves as untapped goldmines of valuable IP, yet often these assets are unavailable for investment until a startup spins up. 
+
+Assets from universities not out-licensed or spun out into startups remain in a difficult limbo, known as ”The Valley of Death,” where they often fail to move forward \citep{Seyhan2019}. Many of these technologies have extreme value to patients, but because of this system, they never ultimately serve the populations intended to benefit from them. These assets require investment and capital injections at a much earlier stage. The market desperately needs new open commercialization models to incentivize their development. 
 
 \section{Solution}
-\textbf{We propose the creation of VitaDAO: the first fully open, community-owned, and transparent longevity intellectual property collective.}
+To address some of the core problems mentioned above, we propose the creation of VitaDAO: a new cooperative vehicle for community-governed and decentralized longevity drug development. VitaDAO is a decentralized autonomous organisation incorporated via smart contracts on a distributed ledger and virtual machine. DAO frameworks follow years of research and experimentation in decentralised governance systems, open networks and decentralized financing solutions. The methods proposed below, while radical, have been adequately tested in other scenarios and are ripe for tackling this core issue.
 
-Members of the public can become co-owners of VitaDAO by purchasing VITA via contributing funds, valuable research data, IP assets, or services to VitaDAO. Ownership of VITA allows the holder to participate in the democratic governance of VitaDAO, and thus direct its research, access and monetize its data repositories, and manage its IP portfolio. VITA Tokens confer ownership and governance rights over VitaDAO, and VitaDAO is the collective organization that will hold custody of the assets it acquires. 
+Anyone can govern VitaDAO by acquiring VITA governance tokens through the contribution of funds or by earning it through the contribution of work, research data, IP assets, or services to VitaDAO. VitaDAO will acquire IP rights and R\&D data, and also commission research to further develop its assets. VitaDAO’s core assets will consist of: 
 
-VitaDAO will acquire IP rights and R\&D data, and also commission research to further develop its assets. VitaDAO's core assets will consist of:
-\begin{enumerate}
-\item IP, including patents and licenses to therapeutics.
-\item R\&D data assets generated by funding research projects.
+\begin{tight_enumerate}
+\item IP; including patents and licenses to therapeutics. 
+\item R\&D data assets generated by funding research projects. 
 \item Funds stored in its treasury, including unissued VITA.
-\end{enumerate}
+\end{tight_enumerate}
 
-
+VITA is designed as a governance and curation token. Ownership of VITA allows the holder to participate in the governance of VitaDAO, and thus, direct its research, access and monetize its data repositories, and manage its IP portfolio.
 
 To acquire and finance specific research proposals, VitaDAO members may elect to issue tokens. VitaDAO can do this on a continuous or per-project basis, using automatic market makers (AMMs) like \citetalias{Balancer2021} (LBPs) that enable a fair and transparent participation for prospective members. 
 
-In order to monetize and manage IP and data assets, VitaDAO members may elect to attach them to Non-Fungible Tokens (NFTs) as detailed below in Section 4.
+In order to curate, govern and monetize IP and data assets on a decentralised network, VitaDAO utilises Non-Fungible Token technical frameworks (NFTs) such as \citetalias{EIP-721} and \citetalias{EIP-1155}, as detailed below in Section 4.
 
-\subsection{Stakeholders}
-VitaDAO will rely on service providers (initially its advisers, Molecule, and other web3 development teams) to facilitate various administrative and developmental functions. Work done by these providers will include the purchase and transfer of IP from universities, updating and maintaining the dapp, validating and formatting information selected by members, and handling other interactions that may emerge over its initial genesis and lifecycle.
+\subsection{Core Stakeholders}
+VitaDAO will rely on collaboration between members, working groups, and service providers to facilitate all functions of the DAO.  
+
+\subsubsection{Members}
+A member of VitaDAO is any entity that stakes VITA into VitaDAOs governance smart contract to participate in voting. Initially, prospective members can only obtain tokens by providing funds or work to the organization. Members have full governance rights and can participate in governance on Discourse (informally) and via token-based voting (formally).
+
+\subsubsection{Working Group Members}
+A working group member provides expertise and advice to VitaDAO. Members can apply to join working groups based on their experience or expertise. Working groups elect working group stewards, who are responsible for leading working groups. Working groups may decide to create incentives for their members in a variety of forms, including paying them for services or creating bounties. In cases where working group members are paid, they can be compensated in VITA tokens, ETH, cash, or other incentive schemes as decided by members.
+
+\subsubsection{Working Groups}
+
+The initial working groups are: 
+\begin{tight_enumerate}
+\item Governance
+\item Tokenomics
+\item Information \& Awareness
+\item Legal
+\item Longevity
+\item Compensation/Incentives/Ops
+\end{tight_enumerate}
+
+\subsubsection{Service Providers}
+Service provicers are members who provide services to VitaDAO, such as development work, IP sourcing and conversion to NFTs, marketplace services, drug development services outside of project scope, etc. VitaDAO will contract service providers and typically pay for their services in fiat or offered tokens in exchange.
 
 \vspace{15pt}
 \begin{center}
@@ -151,116 +194,224 @@ VitaDAO will rely on service providers (initially its advisers, Molecule, and ot
 
 \section{Core Architecture}
 
-\subsection{Organization and Governance}
-VitaDAO is an unincorporated association consisting of several core components including:
-\begin{enumerate}
-\item VitaDAO’s governance smart contracts, modeled after Moloch DAO and the LAO.
-\item VitaDAO’s contribution and liquidity bootstrapping mechanism utilizing Balancer LBPs.
-\item VitaDAO’s IP and data assets, which are represented as NFTs.
-\end{enumerate}
-VitaDAO’s smart contract architecture enables members who own VITA to freely engage in governance decisions pertaining to the assets and funds held by VitaDAO. Members will manage VitaDAO with a dapp, through which they will interact with VitaDAO’s smart contracts and facilitate the purchase, funding, and management of IP and data assets.
+\subsection{Architectural Summary}
+VitaDAO operates via smart contract on the Ethereum blockchain. VitaDAO V1 consists of several core components including: 
 
-VitaDAO members will not only govern the existing structure but also vote on how to refine its structure and governance processes. Because VitaDAO members fully control the governance of VitaDAO, they not only vote, but also make proposals on which to vote. Proposals come in several types: governance proposals, project proposals, funding proposals, data monetization proposals, and IP proposals. As needed, VitaDAO can add or modify proposal types and their governance.
+\begin{tight_enumerate}
+\item Governance and staking smart contracts, modeled after \href{https://github.com/MolochVentures}{MolochDAO} and the \href{https://github.com/openlawteam/TheLAO}{LAO}.
+\item Contribution and liquidity bootstrapping mechanisms using a \href{https://gnosis-auction.eth.link/#/docs#topAnchor}{Gnosis Auction}. 
+\item A native governance and curation token: VITA.
+\item A \href{https://github.com/gnosis/safe-contracts}{Gnosis Safe} multisignature wallet enacting proposals voted on by members.
+\item VitaDAO’s IP and data assets, which are represented as NFTs held by VitaDAO 
+\end{tight_enumerate}
 
-To provide the level of industry expertise required to effectively and thoroughly evaluate therapeutics projects, VitaDAO will elect a council of 3-6 industry experts to review its projects, data and IP. This council assists in submitting proposals to the VitaDAO members.
+VitaDAO’s smart contract architecture enables members who own VITA to freely engage in governance decisions pertaining to the assets and funds held by VitaDAO. Members will manage VitaDAO using a decentralised application, through which they will interact with VitaDAO’s smart contracts and facilitate the purchase, funding, and management of IP and data assets.
 
-The initial goal of VitaDAO is to mimic successful execution patterns in the biotech industry, while improving or replacing those that do not work well. Over time, we expect further governance mechanisms to emerge around VitaDAO.
+\subsection{Governance Framework Overview}
+VitaDAO members are in control of all governance decisions by voting on VitaDAO proposals. Proposals can be made by any VitaDAO member. VitaDAO members can create proposals by posting in the “proposals” section on Discourse, gaining community support, and eventually electing to put the proposal to a token-based vote. 
 
-In summary:
-\begin{enumerate}
-\item VitaDAO members are in full control of the governance of VitaDAO via votes and proposals.
-\item VitaDAO will elect a council of industry experts to review its projects, data and IP. 
-\item VitaDAO may engage service providers spanning patent attorneys, contract research firms or third party experts.
-\item VitaDAO’s initial goal is to mimic successful execution patterns in the biotech industry.
-\end{enumerate}
+VitaDAO working groups consist of domain experts to help guide member decisions in various work streams and organisational processes. Working groups can help define proposals to the VitaDAO members. VitaDAO may engage service providers spanning patent attorneys, contract research firms, or third party experts to provide services to the DAO in exchange for compensation.
 
-\subsection{"Genesis Bootstrapping and Liquidity"}
-For its initial genesis, VitaDAO will deploy a Balancer LBP to enable interested participants to contribute funds to its treasury and join the collective. As VitaDAO grows, members may elect to create additional LBPs to on-board further projects.
+The initial goal is to mimic successful execution patterns in the biotech industry, but over time we expect different governance mechanisms to emerge around VitaDAO.
 
-We anticipate the initial genesis will operate as follows:
-\begin{enumerate}
-\item VitaDAO will allocate a small amount of its fixed token supply into a Balancer LBP with the goal to raise sufficient funds to finance the first research project for two years. The community will decide on the full fundraising budget and structure pending simulations and crypto economic modeling using cadCAD.
-\item The LBP allows the community to contribute funds and join VitaDAO for the first time. Simultaneously, the pool acts as an important first price discovery mechanism. Individuals wishing to join may contribute a multitude of assets, such as ETH, USDC or Ocean and receive VITA tokens according to the corresponding dollar value. The primary currency of the LBP will be USDC to ensure price stability.
-\item After a fixed period, the LBP resolves, forwarding its acquired funds to VitaDAO and kick-starting its operation. Should the LBP fail to reach a specific threshold participants may withdraw their stakes.
-\end{enumerate}
+\subsubsection{Proposal Process}
+Proposals are the primary means through which the DAO makes decisions, deploys funds, and adapts behaviors. Proposals can start formally or informally. \href{https://github.com/discord}{Discord} is the primary place for informal proposal discussions. If these discussions lead to the need for a formal proposal, a member should upload a draft of the proposal to Discourse for community input. These draft proposals undergo refinement based on that community input until they are ready to advance. When the proposal is ready, the draft in \href{https://github.com/discourse/discourse}{Discourse} becomes the final draft, locked against further edits. If the proposal requires formal governance, a member must upload it using the VitaDAO application for a formal, token-based vote. 
+
+To accelerate decision making and avoid decision fatigue, VitaDAO will also use a soft governance mechanism via Discourse. This type of governance is for the smaller, more numerous decisions that depend on norm-setting and local agreements (as in working groups or specific project due diligence). Soft governance does not apply to decisions on issuing funds or tokens from its treasury. When a funding decision needs to happen, there must be a token-based vote. A summary of the process for creating proposals is as follows:
+
+\begin{tight_enumerate}
+\item Phase 0 (Idea): Begin the discussion about the idea in Discord
+\item Phase I (Draft): Post initial proposal to VitaDAO Proposal Channel in Discourse for community feedback and input.
+\item Phase II (Refine): Refine and polish proposal in Discourse until community abandons the proposal or decides it's worth a formal vote.
+\item Phase III (Final): Upload to platform for token-based vote.
+\end{tight_enumerate}
+
+{\setlength{\parindent}{0pt} For more detailed information and user flows, please visit \url{gov.vitadao.com}.}
+
+\subsection{VITA Token Economy}
+The VITA token is the lifeblood and DNA of the VitaDAO ecosystem. VITA is obtained by contributing work, data, IP, or funds to VitaDAO. The core function of VITA is to curate the best longevity IP and fund novel open science data creation around it.
+
+VITA tokens grant rights to participate in: 
+\begin{tight_enumerate}
+\item Which IP receives funds
+\item How projects receives funds
+\item VitaDAO government
+\item VitaDAO treasury management
+\end{tight_enumerate}
+
+As such, VITA grants no ownership of IP, but does grant full governance rights. It is the responsibility of VITA holders to decide how to commercialize its R\&D projects and bring them to patients.
+
+VITA's design follows the sustainability loop principle \citep{Web3Sustain}. As R\&D projects receive funds and begin producing data, VitaDAO's IP value grows with positive research results. Successful commercialisation means the VitaDAO ecosystem grows and more funds become available. This attracts higher quality IP, thus enabling the funding of even more projects and further growth of the VitaDAO ecosystem.
+
+\subsubsection{Genesis}
+The diagram and table below show the initial VitaDAO token distribution. Overall, 30\% of total supply  will go to the community during the initial genesis, and 70\% remain unminted and available in VitaDAO's treasury to ensure the longevity of the organisation. Consider the initial genesis auction the first proof of concept financing to prove VitaDAO's IP and funding model. Members may elect to issue further tokens at any time to the public or select strategic entities and funders. Furthermore, VitaDAO may allocate tokens to various incentive mechanisms as proposed herein or by the community. 
+
+\vspace{15pt}
+\begin{center}
+\includegraphics[width=\linewidth]{images/Initial Token Allocation.png} 
+\end{center}
+
+\subsubsection{Token Supply and Distribution}
+% Provide reference here for her age. 
+Jeanne Louise Calment was the longest lived person in history. She lived for 122 years and 164 days. She lived approximately 64,359,360 minutes on Planet Earth, and that number will be written into  VitaDAO’s DNA. Upon genesis, 64,359,360 VITA will come into existence as a native ERC20 token controlled by VitaDAO. VitaDAO’s token begins unable to exceed that number - it is a capped ERC20 token. Our core collective mission at VitaDAO is to extend the human lifespan, so we propose this token supply cap may only increase if someone lives beyond Jeanne Louise Calment's lifespan.
+
+The genesis distribution event will liberate 10\% of VitaDAO's total token supply to interested participants using a fair and fully open smart contract auction on the Ethereum blockchain.
+
+\begin{table}[h!]
+  \begin{center}
+    \setlength{\extrarowheight}{5pt}
+	\begin{tabular}{p{0.2\textwidth}p{0.2\textwidth}p{0.3\textwidth}}
+		\textbf{Tokens} & & \textbf{Stakeholder}s \\ 
+		\hline
+		6,435,936 & 10\% & Community Genesis \\ 
+		6,435,936 & 10\% & Service Providers (Voted) \\ 
+		6,435,936 & 10\% & Working Groups (Voted) \\ 
+		45,051,552 & 70\% & Treasury \\ 
+		\hline 
+		\textbf{64,359,360} & \textbf{100\%} & \textbf{VitaDAO} \\ 
+		\hline 
+	\end{tabular} 
+  \end{center}
+\end{table}
+
+
+
+% Should we link to the intitial budget proposal here? 
+% Or rather present a formulae along the lines of if VitaDAO raises X funds it can support Y projects
+Since VitaDAO's genesis operates via a public auction, the community decides the initial token price. We estimate a minimum of \$2,500,000 will be required to support the first cohort of research projects. That amount will form the base requirement of a successful auction.
+
+VitaDAO will be fully decentralized and community-owned from inception. No entity will own VITA tokens prior to the genesis contribution event. Prior to the auction, no one issued any tokens or sold any to individual contributors. The tokens don't exist until just before the auction. Nobody controls VitaDAO until after inception.
+
+VITA’s genesis contribution event will run via a fair launch public auction, granting all successful auction participants equal governance rights per VITA. Once the first 10\% of tokens issue, the VitaDAO core community will begin voting on the first governance proposals to allocate additional tokens to working groups and service providers.
+
+Importantly, the approval of these allocations to working groups, contributors, and service providers is at the full discretion of genesis members and their approval. They form the core of VitaDAO's decision-making and executive body.
+
+\subsection{Community Genesis Auction}
+VitaDAO intends to launch in a fully fair and transparent manner, favouring community participation over centralised entities. As a first step, VitaDAO will enable any interested member of the public to contribute to its genesis period using a Gnosis Auction mechanism.
+
+Gnosis Auction uses batch auctions \citep{BatchAuctions}, which are an economic design mechanism for ensuring fair price discovery. Batch auctions enable matching limit orders of buyers and sellers with the same clearing price for all participants. From web3 use cases like Initial DEX Offerings (like those on the Mesa interface for Gnosis Protocol v1) to traditional commercial and financial auctions (like Google’s IPO and the NYSE Open Auction), batch auctions play an important role in the democratization of the auctioned assets. This function is especially important for decentralized entities, which need to ensure fair token distributions while operating trustlessly and efficiently.  In practice, auctioneers determine a minimum price for which they are willing to sell a fixed amount of tokens. Bidders set the maximum price they are willing to pay for a fixed contributions. These characteristics allow the platform to create a fair pricing dynamic in which both participants get either what they were willing to receive or more.
+
+VitaDAO’s initial genesis will operate as follows:
+ 
+\begin{tight_enumerate}
+\item VitaDAO will allocate 10\% of its fixed token supply into a Gnosis Auction with the goal to raise sufficient funds to finance a minimum of five projects and enable the DAO to cover operational expenses and running costs. The community will decide on the full fundraising budget and structure pending simulations and crypto economic modeling using cadCAD. 
+\item The Gnosis Auction allows the community to contribute funds and join VitaDAO for the first time. 
+\item After a fixed period, the Gnosis Auction resolves, forwarding its acquired funds to VitaDAO and kick starting its operation. Should the Gnosis auction fail to reach a specific threshold, participants may withdraw their stakes.
+\end{tight_enumerate}
+
+VitaDAO’s genesis auction will be  on a minimal funding assumption, but otherwise follow full transparent launch mechanisms. Once the auction completes, VitaDAO members may decide to initiate various other fundraising mechanisms such as Balancer Liquidity Bootstrapping Pools or OTC issuance of VITA to selected parties at the full discretion of its community. The VITA token will be in complete control of its community upon genesis.
+
+\section{Staking and Signaling}
+Members can use VITA tokens to signal long-term support for individual projects. A member may stake their VITA tokens for a set time period until a project milestone is reached (e.g. 3 months/6 months/12 months). Projects predetermine milestones and they must be measurable. Their outcome is uncertain, however, meaning members take additional risk by foregoing liquidity. 
+
+When a project reaches a milestone, staked tokens unlock. In return for locking tokens, VitaDAO pays out regular signaling rewards to stakers. This process sends valuable signals to the market, as it showcases the confidence of members in specific projects. Furthermore, it reduces volatility and creates a circular economy to members, who actively contribute value and review project success. 
+
+We anticipate implementing signaling after the first successful project runs an initial funding cycle, giving members time to sufficiently model this mechanism and implement it in VitaDAO V2.
 
 \section{Holding and Managing IP and Data Assets as NFTs}
 
 \subsection{Intellectual Property Rights}
-VitaDAO will directly hold IP rights in underlying research projects and will develop a growing portfolio of assets represented as NFTs using the  novel IP NFT framework developed by Molecule. Molecule’s IP NFT system allows the holder of an existing piece of IP (in the form of a license or patent) to attach it to an NFT and transfer it to a new owner.
+VitaDAO will directly hold IP rights in underlying research projects. Using a novel biopharma IP NFT framework developed by Molecule \citep{Kohlhaas}, VitaDAO will develop a growing portfolio of assets represented as NFTs. Molecule’s IP NFT legal mapping framework allows the holder of an existing piece of IP, in the form of a license or patent, to attach their IP to an NFT and transfer it to a new owner within seconds. Digital asset identifiers for IP are stored on immutable file storage networks, such as IPFS \citep{IPFS} and Arweave \citep{Arweave}. Furthermore, sensitive data can be protected and obfuscated to only be accessed by the holder of the NFT, as would be the case with a legal license. Data can be made accessible via access right management frameworks on local federated data storage systems.
 
-Upon IP NFT creation, the creator must sign a cryptographic message that prints their signature onto an IP licensing agreement. When the NFT changes owners, the transaction requires both buyer and seller of the NFT to sign a message that references the IP license agreement, which includes references to the transaction, the buyer and seller’s respective identities, and legal signatures modeled after the legal Signature Algorithm pioneered by \citet{OpenLaw2019}.
+Upon IP NFT creation, the creator must sign a cryptographic message that prints their signature onto an IP licensing agreement. When the NFT changes owners, the transaction requires both buyer and seller of the NFT to sign a message that references the IP license agreement, which includes references to the transaction, the buyer and seller’s respective identities, and legal signatures modeled after the legal Signature Algorithm pioneered by \citep{OpenLaw2019}. 
 
-%ADD SECTION ON NFT fractionalisation, sharding, royalty streams. 
-%https://tokeneconomy.co/token-bonding-curves-in-practice-3eb904720cb8
-
-Initially, VitaDAO will hold IP in research projects for longevity therapeutics in the form of licenses. These licenses enable VitaDAO or its designated service providers to file for patents, monetize the IP, and contract researchers to grow the value of the underlying assets.
+Initially, VitaDAO will hold IP in research projects for longevity therapeutics in the form of licenses. These licenses enable VitaDAO or its designated service providers to file for patents, monetize the IP, and contract researchers to grow the value of the underlying assets. 
 
 \subsection{Data Assets}
-Besides owning IP rights related to individual projects, VitaDAO will also own data assets and research outputs from the R\&D it funds. VitaDAO will hold custody over these assets, while making them available to its members and others, and monetizing them via data marketplaces such as Ocean Marketplace. VitaDAO may attach these data assets to NFTs where useful and applicable. 
+Besides owning IP rights related to individual projects, VitaDAO will also own data assets and research outputs from the R\&D it funds. VitaDAO will hold custody over these assets, while making them available to its members and others, and monetizing them via data marketplaces such as Ocean Marketplace. VitaDAO may attach these data assets to NFTs where useful and applicable.
+ 
+VitaDAO’s introduction of its data assets into Web3 will drive fluid price discovery and liquidity for each individual data set as buyers and sellers engage with them and curate the most valuable findings. Obfuscation of data assets and enabling secure computation on them will be a highly relevant future use case that Web3 protocols such as Ocean Protocol could facilitate. The applications around composability and interoperability here are manifold, and once VitaDAO is live those applications will receive further exploration. 
 
-VitaDAO’s introduction of its data assets into Web3 will drive fluid price discovery and liquidity for each individual data set as buyers and sellers engage with them and curate the most valuable findings. Obfuscation of data assets and enabling secure computation on them will be a highly relevant future use case that Web3 protocols such as Ocean Protocol could facilitate. The applications around composability and interoperability here are manifold, and once VitaDAO is live those applications will receive further exploration.
-
-Data assets could include, but are not limited to: laboratory updates and reports, processed data, quarterly updates, western blot data, qPCR data, cell culture experiments, survival analysis, sequence data, western blot gels, microscopy and cell culture. These data assets could be in the forms of raw data, images or PDFs.
+Data assets could include, but are not limited to: laboratory updates and reports, processed data, quarterly updates, western blot data, qPCR data, cell culture experiments, survival analysis, sequence data, western blot gels, microscopy, and cell culture. These data assets could be in the form of raw data, images or PDFs. 
 
 The type of data assets and their monetization potential are summarized below:
-\begin{enumerate}
-\item \textbf{Public Data Assets:} All data in these assets are view-able by members, who can vote to list these data packages on Ocean Marketplace.
+
+\begin{tight_enumerate}
+\item \textbf{Public Data Assets:} All data in these assets are view-able by members, who can vote to list these data packages on various data marketplaces.
 % NEXT ITEM NEEDS SOURCE
-\item \textbf{IP Data Assets:} Required for filing of patents or further IP. These assets will be obfuscated as they could compromise filing of IP. These assets could end up on Ocean Marketplace after they have IP filed to protect them.
-\item \textbf{Progress Data Assets:} Intended to keep DAO members up-to-date on ongoing research findings and serving as proof of progress. This data has a certain level of obfuscation, meaning any information capable of compromising the intellectual property itself will be hidden. Such data would not be relevant for Ocean Marketplace.
-\end{enumerate}
-Members wishing to engage with the IP, review the data assets directly, or engage with the council may need to submit KYC documentation and sign non-compete and confidentiality agreements to help ensure the viability of the assets for all members.
+\item \textbf{IP Data Assets:} Required for filing of patents or further IP. These assets will be obfuscated as they could compromise filing of IP. These assets could end up on data marketplaces after they have IP filed to protect them.
+\item \textbf{Progress Data Assets:} Intended to keep DAO members up-to-date on ongoing research findings and serving as proof of progress. This data has a certain level of obfuscation, meaning any information capable of compromising the intellectual property itself will be hidden. Such data would not be relevant for data marketplaces.
+\end{tight_enumerate}
 
-\section{Staking and Signaling}
-Members can use VITA tokens to signal long-term support for individual projects. A member may stake their VITA tokens for a set time period until a project milestone is reached (e.g. 3 months/6 months/12 months). Projects predetermine milestones and they must be measurable. Their outcome is uncertain, however, meaning members take additional risk by foregoing liquidity.
+Members wishing to engage with the IP, review the data assets directly, or engage with the longevity working group may need to submit KYC documentation and sign non-compete and confidentiality agreements to help ensure the viability of the assets for all members.
 
-When a project reaches a milestone, staked tokens unlock. In return for locking tokens, VitaDAO pays out regular signaling rewards to stakers. This process sends valuable signals to the market, as it showcases the confidence of members in specific projects. Furthermore, it reduces volatility and creates a circular economy to members, who actively contribute value and review project success.
+\section{First Project Lifecycle}
+Within the genesis service provision, we propose to fund VitaDAO’s first end-to-end proof of concept with the Scheibye-Knudsen Laboratory at the Aging Research Lab at the University of Copenhagen.
 
-We anticipate implementing signaling after the first successful project runs an initial funding cycle, giving members time to sufficiently model this mechanism and implement it in VitaDAO V2.
-
-\section{Genesis \& First Project Lifecycle}
-The following section details the initial Genesis project acquisition and models out a potential first project lifecycle. After Genesis and instantiation of its governance mechanism, VitaDAO members will vote to incorporate the first longevity therapeutic into its collective by purchasing an NFT attached to IP of a longevity project from the Scheibye-Knudsen Laboratory at the University of Copenhagen. Once the acquisition is complete, members can vote to allocate a first tranche of funding to the University of Copenhagen to commence research.
+In a first proof of concept, Molecule has out-licensed the full rights to this project and will transfer it to VitaDAO. In addition, VitaDAO will fund the first set of laboratory experiments and begin receiving its first data assets. We propose to conclude this as a one-off deal to kickstart VitaDAO's research economy. Molecule will submit both the IP NFT transfer and contract research agreement to VitaDAO members for an initial vote.
 
 The project lifecycle could operate as follows:
-\begin{enumerate}
+
+\begin{tight_enumerate}
 \item VitaDAO proposes to purchase the Scheibye-Knudsen Laboratory IP NFT.
 \item VitaDAO members vote on the proposal and define the project parameters and payment schedules with the Scheibye-Knudsen Laboratory.
 \item The project commences as VitaDAO completes a first payment to initiate the preclinical studies.
 \item The Scheibye-Knudsen Laboratory begins delivering first data assets consisting of progress reports, raw data and initial findings.
-\item First definitive findings are in, and VitaDAO members, supported by industry advisers, decide how to use the data and further commercialize the asset. This could result in:
-\begin{enumerate}[a.]
+\item First definitive findings are in, and VitaDAO members, supported by working groups, decide how to use the data and further commercialize the asset. This could result in: 
+\begin{tight_enumerate}
 \item Filing for further IP and patents.
 \item Filing for clinical trials and further studies.
 \item Monetizing the data sets through Ocean Marketplace.
-\end{enumerate}
-\item Simultaneously, VitaDAO may decide to launch further LBPs for additional projects at any point, which are sourced through its community, or to raise additional funding for the Scheibye-Knudsen Laboratory.
-\end{enumerate}
+\end{tight_enumerate}
+\end{tight_enumerate}
+
+VitaDAO will open applications for additional research projects upon launch based on criteria that are currently being refined by the various working groups. To review the current proposals from the longevity working group and to better understand the evaluation criteria, please visit \url{gov.vitadao.com}.
 
 \section{Exit Scenarios and IP Commercialization}
-If the research data surrounding an asset is sufficiently positive and clinical trials are attractive, VitaDAO can license or sell its IP or data to institutional stakeholders, such as pharmaceutical or biotech companies. Given enough liquidity and governance sophistication, VitaDAO could even attempt to bring these assets to market itself. Members of VitaDAO will decide on how to distribute income generated from successful IP monetization.
+If the research data surrounding an asset is sufficiently positive and clinical trials are attractive, VitaDAO can license or sell its IP or data to industry stakeholders, such as pharmaceutical or biotech companies. Given enough liquidity and governance sophistication, VitaDAO could even attempt to bring these assets to market itself. Members of VitaDAO will decide on how to distribute income generated from successful IP monetization. 
 
 Individual IP and NFTs may be spun out into separate fractionalized markets to enable more granular participation by the public. From a technical perspective, this would entail moving the NFT and associated data sets out of custodianship of VitaDAO and into a sub-DAO represented by a new ERC20 token. Members of VitaDAO may elect to spin out a project to:
-\begin{enumerate}
+
+\begin{tight_enumerate}
 \item Enable the project and IP to raise additional funding from a wider community.
 \item Create exit scenarios for VitaDAO and further decentralize project ownership.
 \item Enable more granular fundability and participation on a project level.
-\end{enumerate}
+\end{tight_enumerate}
+
+\subsection{Pathways to Filing for IP}
+The VitaDAO community and working groups should actively collaborate with projects they support to establish an intellectual property protection plan before commercializing. Pathways towards filing IP should be identified early on, if possible. The legal and longevity working groups should guide the community and active projects to help make intellectual property protection decisions and create a clear commercial pathway for the project.
+
+VitaDAO may license its technologies to a third-party company to further develop and commercialize it. This can happen at any stage if there is interest from a third party. In the long run, the DAO should build internal TTO-like capacities, in the form of collaborative working groups and service providers, to carry out this function. Such license agreements will assign responsibility for paying for patent coverage to protect the invention, set a fee or royalty schedule, and clarify ownership of further improvements or developments.
+
+There are several pathways to IP protection, each with their own advantages and disadvantages. Projects that have the potential to yield composition of matter patents, or New Chemical Entities, are often more valuable than method of use patents \citep{BlackBox}. However, new method of use patents will be more common in the context of repurposing projects, which also have distinct advantages, given these drugs have already been tested and approved in humans. This reduces hurdles in the clinic, but may be more difficult to commercialise. Medicinal chemistry strategies can also be employed to create NCEs from repurposed drugs. 
+
+%CONSIDER SUMMARIZING THIS SECTION
+To secure a composition of matter patent on a chemical structure, it is necessary to check whether this compound has been previously synthesized and described in the literature. Findings should be made in consultation with an experienced biotech and pharma focused patent attorney at a leading IP law firm. Questions about ‘patentability,’ ‘novelty,’ ‘unity of invention’ and other legal frameworks should be evaluated by this attorney.
+
+\subsection{Pathways to Commercialising IP}
+Projects submitted to VitaDAO should specify potential pathways to IP protection and commercialization when they submit an application. This should be high level and subject to change, but will encourage academics to think in the context of a commercial framework. The legal and longevity working groups should evaluate the feasibility of these plans, and provide feedback and guidance on the projects to determine if such a route is feasible. If the route is not deemed to be feasible, the working groups should engage in conversation and provide alternative suggestions. 
+
+NCEs should be prioritized above pathways focused on claiming a new method of use. If a pathway for a new method of use is determined to be a good fit, legal counsel should begin exploring possibilities for optimization early on in the life cycle of the project. 
+
+When a project has sufficient data and support to file a claim on IP, VitaDAO’s should engage their legal counsel to determine the best route forward, and to make decisions on which jurisdictions to file in. The DAO can elect representatives to file these claims on its behalf, or establish legal entities to do so (such as a Delaware LLC). These representatives or entities could also serve as a point of engagement or contracting if these technologies are to be acquired or licensed in the future. Once IP has been filed and a patent is pending/granted, the DAO can engage in business development to license or sell this intellectual property.
+
+The objective of any deal should be to create a “win-win” deal for VitaDAO and potential licensees (pharmas, biotechs, and VCs).
+
+To achieve this outcome, business development executives (WG members, in the case of VitaDAO) on both sides of the licensing deal must ensure they strive for a fair deal structure, which means that both sides of the licensing deal must make sure that:
+
+\begin{tight_enumerate}
+\item VitaDAO receives payments reflecting the invested money as well as the current product value.
+\item The licensee is compensated for taking the risk associated with the future product development.
+\item The selected valuation model is transparent and the rationale behind the used assumptions is clear and based on solid data.
+\end{tight_enumerate}
+
+Even though it is paramount to get each step in the deal-making process right, one is particularly important: the product value. Without a realistic product value, there is a high risk that the value gap between the licensor and the licensee will be too large to reach a consensus. VitaDAO should determine product value by engaging external service providers and experts along with the appropriate working groups. The risk-adjusted Net Present Value (rNPV) valuation method is highly suitable and widely accepted for calculating the product value \citep{PriceBio}. The model is clear, transparent and allows one to consider different deal structures, while understanding how the value is split between the licensor and the licensee.
 
 \section{Open Research Questions}
-The mechanics described in this paper are novel, experimental, and rely on multiple moving parts, especially the creation of an active tokenized governance community. Our goal is to tackle these questions together as a community and through multiple working groups that include industry experts, as these experts will substantially improve the system’s long-term potential.
+The mechanics described in this paper are novel, experimental, and rely on multiple moving parts. The most important being the creation of an active, tokenized governance community. Our goal is to tackle these questions together as a community, and through multiple working groups that include industry experts, since experts will substantially improve the system’s long-term potential.
+
 \begin{enumerate}
-\item \textbf{Governance and effective collective decision-making on drug development projects:} can a decentralized community effectively govern and attract the expertise required to successfully commercialize therapeutics? Will the token-based voting mechanism described herein succeed in generating positive outcomes?
+\item \textbf{Governance and effective collective decision-making on drug development projects:} can a decentralized community effectively govern and attract the expertise required to successfully commercialize therapeutics? Will the token-based voting mechanism described herein succeed in generating positive outcomes?  
 \item \textbf{Biopharma business logic:} will the biopharma industry be open to purchasing IP and patents produced by a decentralized collective, as opposed to current business practices? Will VitaDAO be able to support a sufficient number of projects to become positive-sum at scale?
 \item \textbf{Legal and patent law:} can VitaDAO successfully file for further patents on the IP assets it manages or will it have to rely on third parties? In case of patent litigation against VitaDAO, is it able to protect the validity of the IP as a normal company could?
 \end{enumerate}
 
 \section{Conclusion}
-The open IP and data ownership structures presented here could help alleviate some of the most severe challenges in the current pharmaceutical and biotech pipeline, and could help create a future of open and democratic ownership of longevity therapeutics. 
+The open IP and data ownership structures presented here could help alleviate some of the most severe challenges in the current pharmaceutical and biotech pipeline. VitaDAO could help create a future of open and democratic ownership of longevity therapeutics. 
 
-IP collectives like VitaDAO can help realign incentives with neglected stakeholder groups - patients and scientists - by creating alternative democratic research structures that distribute value and governance more evenly. Imagine research on a new breakthrough insulin treatment funded by diabetics who believe in it and stand to benefit the most from it. What would this do to access and pricing?
+IP collectives like VitaDAO will realign incentives with neglected stakeholder groups - patients and scientists - by creating alternative democratic research structures that distribute value and governance more evenly. Imagine research on a new breakthrough insulin treatment funded by diabetics who believe in it and stand to benefit the most from it. What would this do to access and pricing? 
 
-Separating R\&D data creation from IP ownership helps overcome a costly principal-agent dilemma and the current reproducibility crisis. In an openly traded curation market and structure, both negative and positive data might surface much sooner and allow the best therapeutics to succeed. Transparent financialization of data  and open composability with decentralized financial markets opens up entirely new and accelerated funding models to promising scientists and laboratories across the globe. 
+Separating R\&D data creation from IP ownership helps overcome a costly principal-agent dilemma and the current reproducibility crisis. In an openly traded curation market and structure, both negative and positive data might surface much sooner and allow the best therapeutics to succeed. Transparent commercialisation of data and open composability with decentralized financial markets opens up entirely new and accelerated funding models to promising scientists and laboratories across the globe. 
 
 From an industry perspective, we believe IP cooperatives like VitaDAO will be a win-win situation for all stakeholders: biopharma, researchers, and patients. It combines traditional industry IP holding structures with novel, tokenized ownership accessible by anyone wishing to contribute to the research. In doing so, it drives valuable innovation in the biopharma industry.
 
